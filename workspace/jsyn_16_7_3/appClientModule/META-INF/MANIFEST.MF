@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Vendor: SoftSynth.com
+Implementation-Version: 15.0.0
+Implementation-Vendor-Id: com.softsynth
+Specification-Vendor: SoftSynth.com
+Created-By: 1.4 (Sun Microsystems, Inc)
+Specification-Version: 15.0.0
+Extension-Name: com.softsynth.jsyn
+Main-Class: com.jsyn.apps.AboutJSyn
+

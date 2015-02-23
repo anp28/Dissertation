@@ -1,0 +1,53 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
+public class Sequencer {
+
+	String sequence1;
+	String sequence2;
+	MyFileReader fr = new MyFileReader();
+	MyFileReader fr2 = new MyFileReader();
+	Sequence ma = new Sequence();
+
+	public Sequencer() {
+
+		fr.openFile("C:\\Users\\Andy\\Desktop\\EbolaStrands\\KM233042.1.txt");
+		sequence1 = fr.readFullFile();
+
+		fr2.openFile("C:\\Users\\Andy\\Desktop\\EbolaStrands\\KM233044.1.txt");
+		sequence2 = fr2.readFullFile();
+
+		String[] aligned = ma.align(sequence1, sequence2);
+
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter("comparrison.txt"));
+			
+			
+			for (int x = 60; x < aligned[0].length() || x < aligned[1].length(); x++) {
+				
+				writer.write(aligned[0].substring((x-60), x));
+				
+				
+				writer.newLine();
+				
+				
+				writer.write(aligned[1].substring((x-60), x));
+				
+				
+				
+				writer.newLine();
+				writer.newLine();
+				x+=60;
+				
+			}
+
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+}

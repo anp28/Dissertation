@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="jsyn_16_7_3">
+        <wb-resource deploy-path="/" source-path="/appClientModule"/>
+        <property name="java-output-path" value="/jsyn_16_7_3/build/classes"/>
+    </wb-module>
+</project-modules>
