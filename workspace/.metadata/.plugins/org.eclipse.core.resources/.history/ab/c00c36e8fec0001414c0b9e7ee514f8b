@@ -1,0 +1,45 @@
+package GUI;
+
+import Images.*;
+import aligner.*;
+
+public class GUIController{
+
+	private Sequence sequences = new Sequence();
+	
+	ImageUtilities iu;
+	AnimationGen animGen1;
+	AnimationGen animGen2;
+	
+	public void genImage(MyJPanel p1, MyJPanel p2){
+		AnimationGen ag1 = new AnimationGen(p1);
+		ag1.setSequence(sequences.getSequence1());
+		
+		AnimationGen ag2 = new AnimationGen(p2);
+		ag1.setSequence(sequences.getSequence2());
+		// iu = new ImageUtilities(p);
+	}
+	
+	public String[] getImageList(){
+		return null;
+	}
+	
+	public String[] getAnimationList(){
+		return null;
+	}
+	
+	public Sequence getSequences(){
+		return sequences;
+	}
+	
+	public boolean align(){
+		try{
+		sequences.alignSequences();
+		} catch(Exception e){
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+}

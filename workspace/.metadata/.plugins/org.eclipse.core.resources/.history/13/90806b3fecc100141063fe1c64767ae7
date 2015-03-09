@@ -1,0 +1,35 @@
+package aligner;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import aligner.*;
+
+public class SequencerAligner {
+
+	MyAligner ma = new MyAligner();
+
+	String s1Title, s2Title;
+	Runtime rt = Runtime.getRuntime();
+	
+	public SequencerAligner(String s1, String s2, String method){
+		
+		switch (method){
+		case "Own" :
+			// Using own
+			String[] aligned = ma.align(s1, s2);
+			s1 = aligned[0];
+			s2 = aligned[1];
+		break;
+		case "Needleman" :
+		NeedlemanWunsch nw = new NeedlemanWunsch();
+		nw.run(s1, s1);
+		break;
+		case "SmithWaterman" :
+		SmithWaterman sw = new SmithWaterman();
+		sw.run(s1, s2);
+			break;
+		}
+	}
+
+}

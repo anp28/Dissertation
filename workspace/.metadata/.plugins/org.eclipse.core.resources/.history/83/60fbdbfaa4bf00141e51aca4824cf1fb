@@ -1,0 +1,28 @@
+
+public class MusicController {
+
+	public static void main(String[] args){
+		
+		String s = "TTGTGTGCGAATAACTATGAGGAAGA";
+		String bs = "TTGT";
+		//MusicPlayer mp = new MusicPlayer(s, false);
+		
+		new Thread(){
+			public void run(){
+				MusicPlayer mp1 = new MusicPlayer(s, true);
+			}
+			
+		}.run();
+		
+		new Thread(){
+			public void run(){
+				MusicPlayer mp2 = new MusicPlayer(bs, true);
+			}
+			
+		}.run();
+		
+		
+		
+	}
+	
+}

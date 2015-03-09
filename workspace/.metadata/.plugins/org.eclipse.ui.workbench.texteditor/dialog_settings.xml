@@ -2,20 +2,25 @@
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="false" key="isRegEx"/>
-		<item value="" key="selection"/>
+		<item value="r" key="selection"/>
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="true" key="wrap"/>
 		<item value="false" key="wholeword"/>
 		<list key="findhistory">
-			<item value="//"/>
+			<item value="r"/>
+			<item value="f."/>
+			<item value="f.getContentPane()"/>
+			<item value="cp"/>
 			<item value="-"/>
+			<item value="//"/>
 			<item value="sourceImage"/>
 			<item value="embossColorImage"/>
-			<item value="MyAligner"/>
 		</list>
 		<list key="replacehistory">
+			<item value="i"/>
 			<item value=""/>
+			<item value="cp"/>
 			<item value="image"/>
 			<item value="sourceImage"/>
 			<item value="sourceImag"/>

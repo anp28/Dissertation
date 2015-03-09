@@ -1,0 +1,77 @@
+package GUI;
+
+import music.MusicGen;
+import Images.*;
+import aligner.*;
+import animation.AnimationGen;
+
+public class GUIController{
+
+	private Sequence sequences = new Sequence();
+	
+	ImageUtilities iu;
+	AnimationGen animGen1;
+	AnimationGen animGen2;
+	MusicGen musicGen1;
+	MusicGen musicGen2;
+	
+	String[] mediaTypes = {"Animations", "Images", "Music"};
+	
+	public void genAnimation(MyJPanel p1, MyJPanel p2,final String type){
+		animGen2 = new AnimationGen();
+		animGen1.setPanel(p1);
+		animGen1.setSequence(sequences.getSequence1());
+		
+		animGen2.setPanel(p2);
+		animGen2.setSequence(sequences.getSequence2());
+		
+		new Thread(){
+			public void run(){
+				animGen1.start(type);
+			}
+			
+		}.run();
+		new Thread(){
+			public void run(){
+				animGen2.start(type);
+			}
+			
+		}.run();
+	}
+	
+	public void genMusic(String string) {
+		musicGen2 = new MusicGen();
+		musicGen1.setSequence(sequences.getSequence1());
+		musicGen1.setMusic();
+	}
+	
+	public String[] getMediaTypes(){
+		return mediaTypes;
+	}
+	
+	public String[] getMusicList(){
+		musicGen1 = new MusicGen();
+		return musicGen1.getMusicList();
+	}
+	
+	public String[] getImageList(){
+		return null;
+	}
+	
+	public String[] getAnimationList(){
+		animGen1 = new AnimationGen();
+		return animGen1.getAnimationList();
+	}
+	
+	public Sequence getSequences(){
+		return sequences;
+	}
+	
+	public boolean align(){
+		//TODO sequences.alignSequences();
+		return true;
+	}
+
+
+
+}

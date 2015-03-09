@@ -1,0 +1,37 @@
+
+public class MusicController {
+
+	public static void main(String[] args){
+		
+		String s = "CAAGATTGAGAATTAACTTTGAT";
+		int[] octive = {6,5,5,5,6,6,6,6,6,5,5,5,5,5,6,6,6,6,5,5,5,6,6}; 
+		    int[] nl = {3,3,3,2,3,3,3,4,3,3,3,2,3,3,3,4,3,3,3,2,3,3,3};
+		
+		    String bs = "AGAGAGAG";
+		   int[] o2 ={3,3,3,3,3,3,3,3};
+		int[] bsnl = {3,3,3,2,3,3,3,4};
+		//MusicPlayer mp = new MusicPlayer(s, false);
+		final MusicPlayer mp2 = new MusicPlayer();
+		final MusicPlayer mp = new MusicPlayer();
+		
+		Thread backing = new Thread(){
+			public void run(){
+				mp2.play(true,bs,bsnl, o2);
+			}
+			
+		};
+		
+		Thread t = new Thread(){
+			public void run(){
+				mp.play(false,s,bsnl, octive);
+				mp2.stop();
+			}
+			
+		};
+
+		t.start();
+		backing.start();
+		
+	}
+	
+}

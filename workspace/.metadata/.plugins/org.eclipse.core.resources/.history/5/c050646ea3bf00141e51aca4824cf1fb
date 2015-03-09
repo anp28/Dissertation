@@ -1,0 +1,33 @@
+
+public class MusicController {
+
+	public static void main(String[] args){
+		
+		String s = "TTGTGTGCGAATAACTATGAGGAAGA";
+		String bs = "TTGT";
+		MusicPlayer mp = new MusicPlayer();
+		
+		for (int i = 0; i < s.length(); i++) {
+
+			char c = s.charAt(i);
+
+			/*switch(c){
+				case 'A' :
+					mp.playNote('C',4);
+					break;
+				case 'G' :
+					mp.playNote('D',4);
+					break;
+				case 'C' :
+					mp.playNote('E',4);
+					break;
+				case 'T' :
+					mp.playNote('F',4);
+					break;
+			}*/
+
+		}
+		
+	}
+	
+}

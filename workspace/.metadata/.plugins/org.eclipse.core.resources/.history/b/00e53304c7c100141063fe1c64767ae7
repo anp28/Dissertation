@@ -1,0 +1,48 @@
+package aligner;
+public class Sequence {
+
+	String sequence1 = null;
+	String sequence2 = null;
+	String sequence1Title = null;
+	String sequence2Title = null;
+	SequencerAligner sa = null;
+	
+	public void setSequence1(String s) {
+		sequence1 = s;
+	}
+
+	public String getSequence1() {
+		return sequence1;
+	}
+
+	public void setSequence2(String s) {
+		sequence2 = s;
+	}
+
+	public String getSequence2() {
+		return sequence2;
+	}
+
+	public String setSequence1Title(String st) {
+		return sequence1Title = st;
+	}
+
+	public String getSequence1Title() {
+		return sequence1Title;
+	}
+
+	public String setSequence2Title(String st) {
+		return sequence2Title = st;
+	}
+
+	public String getSequence2Title() {
+		return sequence2Title;
+	}
+	
+	public void alignSequences(){
+		System.out.print("is s1 null " + sequence1.equals(null));
+		System.out.print("is s1 null " + sequence2.equals(null));
+		//sa= new SequencerAligner(sequence1, sequence2);
+	}
+
+}

@@ -1,0 +1,106 @@
+import com.softsynth.jsyn.*;
+
+public class MusicPlayer {
+
+	double[] pianoNotes = { 27.5, 30.868, 32.703, 36.708, 41.203, 43.654, 48.999 };
+
+	int noteLength = 200;
+	double volume = 0.1;
+
+	SawtoothOscillatorBL osc;
+	// SineOscillator osc;
+	LineOut lineOut;
+
+	public MusicPlayer(boolean repeat, String notes, int[] noteLength, int[] octive) {
+
+		Synth.startEngine(0);
+
+		osc = new SawtoothOscillatorBL();
+
+		lineOut = new LineOut();
+
+		osc.output.connect(0, lineOut.input, 0);
+		osc.output.connect(0, lineOut.input, 1);
+		osc.start();
+		lineOut.start();
+		
+		try {
+
+			for (int i = 0; i < notes.length(); i++) {
+				char c = notes.charAt(i);
+				
+				switch (c) {
+				case 'A':
+					playNote('C', octive[i], noteLength[i]*100);
+					break;
+				case 'G':
+					playNote('D', octive[i], noteLength[i]*100);
+					break;
+				case 'C':
+					playNote('E', octive[i], noteLength[i]*100);
+					break;
+				case 'T':
+					playNote('F', octive[i], noteLength[i]*100);
+					break;
+				}
+
+				if (notes.length() -1 == i && repeat) {
+					i = 0;
+
+				}
+
+			}
+
+		} catch (Exception e) {
+			System.exit(0);
+		}
+		
+		osc.stop();
+		lineOut.stop();
+		osc.delete();
+		lineOut.delete();
+		Synth.stopEngine();
+
+	}
+
+	public void playNote(char note, int octive, int noteLength) {
+		double noteToPlay = 0;
+		switch (note) {
+		case 'A':
+			noteToPlay = pianoNotes[0] * octive;
+			break;
+		case 'B':
+			noteToPlay = pianoNotes[1] * octive;
+			break;
+		case 'C':
+			noteToPlay = pianoNotes[2] * octive;
+			break;
+		case 'D':
+			noteToPlay = pianoNotes[3] * octive;
+			break;
+		case 'E':
+			noteToPlay = pianoNotes[4] * octive;
+			break;
+		case 'F':
+			noteToPlay = pianoNotes[5] * octive;
+			break;
+		case 'G':
+			noteToPlay = pianoNotes[6] * octive;
+			break;
+		default:
+			noteToPlay = 0;
+			break;
+		}
+
+		osc.frequency.set(noteToPlay);
+		osc.amplitude.set(volume);
+
+		Synth.sleepForTicks(noteLength);
+
+		osc.frequency.set(0);
+		osc.amplitude.set(volume);
+
+		Synth.sleepForTicks(50);
+	}
+
+}

@@ -1,0 +1,101 @@
+package music;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+public class MusicGen {
+
+	String[] musicList = { "Standard" };
+
+	int[] mainNotes;
+	int[] mainOctive;
+
+	char[] backingNotes = new char[10];
+	int[] backingNoteLength = new int[10];
+	int[] backingOctive = new int[10];
+
+	String sequence;
+	ArrayList<String> al = new ArrayList<String>();
+
+	// 160 seconds - 10 of which are backing - 2:30 different notes
+
+	public void setSequence(String s) {
+		sequence = s;
+	}
+
+	public void setMusic() {
+		// 300 for main notes and 20 for backing each note lasts 500
+		// milliseconds
+		int charPerNote = sequence.length() / 160;
+		splitString(charPerNote);
+		setBacking();
+		MusicPlayer backing = new MusicPlayer();
+		backing.play(true, backingNotes, backingNoteLength, backingOctive);
+
+	}
+
+	public char getLargest(int[] ints) {
+		int maxIndex = 0;
+		int max = 0;
+		for (int i = 0; i < ints.length; i++) {
+		    if (ints[i] > max) {
+		        max = ints[i];
+		        maxIndex = i;
+		    }
+		}
+		switch (maxIndex) {
+		case 0:
+			return 'C';
+		case 1:
+			return 'A';
+		case 2:
+			return 'T';
+		default:
+			return 'G';
+		}
+
+	}
+
+	public void setBacking() {
+		for (int i = 0; i < 10; i++) {
+			String s = al.get(i);
+			int[] noOfChars = { countChars(s, 'C'), countChars(s, 'A'),
+					countChars(s, 'T'), countChars(s, 'G'), countChars(s, '-') };
+
+			backingNotes[i] = getLargest(noOfChars);
+			backingNoteLength[i] = 1;
+			backingOctive[i] = 3;
+
+		}
+
+	}
+
+	public void setMain() {
+		for (int i = 0; i < 100; i++) {
+			String s = al.get(i);
+			int[] noOfChars = { countChars(s, 'C'), countChars(s, 'A'),
+					countChars(s, 'T'), countChars(s, 'G'), countChars(s, '-') };
+
+			mainNotes[i] = getLargest(noOfChars);
+			mainOctive[i] = 1;
+
+		}
+	}
+
+	public void splitString(int length) {
+		for (int i = 0; i < sequence.length(); i += length) {
+			al.add(sequence.substring(i,
+					Math.min(sequence.length(), i + length)));
+		}
+	}
+
+	public int countChars(String s, char c) {
+		String str = s;
+		return str.replaceAll("[^" + c + "]", "").length();
+	}
+
+	public String[] getMusicList() {
+
+		return musicList;
+	}
+}

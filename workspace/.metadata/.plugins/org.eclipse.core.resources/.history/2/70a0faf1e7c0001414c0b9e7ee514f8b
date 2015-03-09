@@ -1,0 +1,123 @@
+
+
+import com.softsynth.jsyn.*;
+
+public class MusicPlayer {
+
+	double[] notes = {27.5, 30.868, 32.703,36.708,41.203, 43.654,48.999};
+	
+	int noteLength = 200;
+	double volume = 1;
+
+	SawtoothOscillatorBL osc;
+	LineOut lineOut;
+
+	public MusicPlayer(String sg, boolean repeat, int[] noteLength, double vol, int[] octive) {
+		
+		volume = vol;
+		String s = sg;
+		// Start JSyn synthesizer.
+		Synth.startEngine(0);
+		
+		// Create some unit generators.
+		osc = new SawtoothOscillatorBL();
+		lineOut = new LineOut();
+
+		// Connect oscillator to both left and right channels of output.
+		osc.output.connect(0, lineOut.input, 0);
+		osc.output.connect(0, lineOut.input, 1);
+
+		// Start the unit generators so they make sound.
+		try {
+			do {
+
+				osc.start();
+				lineOut.start();
+				for (int i = 0; i < s.length(); i++) {
+					this.noteLength = noteLength[i] * 100;
+					char c = s.charAt(i);
+					
+					//playNote(c,octive[i]);
+					
+					switch(c){
+						case 'A' :
+							playNote('C',octive[i]);
+							break;
+						case 'G' :
+							playNote('D',octive[i]);
+							break;
+						case 'C' :
+							playNote('E',octive[i]);
+							break;
+						case 'T' :
+							playNote('F',octive[i]);
+							break;
+						case ' ' :
+							playNote(' ',0);
+							break;
+					}
+					
+					if (repeat){
+						if(i ==7  ){
+							i = -1;
+						}
+					}
+
+				}
+
+				 //Stop units and delete them to reclaim their resources.
+				osc.stop();
+				lineOut.stop();
+				 osc.delete();
+				 lineOut.delete();
+			} while (s != null);
+		} catch (Exception e) {
+			System.exit(0);
+		}
+
+		// Stop JSyn synthesizer.
+		Synth.stopEngine();
+
+	}
+
+	public void playNote(char note, int octive) {
+		double noteToPlay = 0;
+		switch(note){
+		case 'A':
+			noteToPlay = notes[0] * octive;
+			break;
+		case 'B':
+			noteToPlay = notes[1] * octive;
+			break;
+		case 'C':
+			noteToPlay = notes[2] * octive;
+			break;
+		case 'D':
+			noteToPlay = notes[3] * octive;
+			break;
+		case 'E':
+			noteToPlay = notes[4] * octive;
+			break;
+		case 'F':
+			noteToPlay = notes[5] * octive;
+			break;
+		case 'G':
+			noteToPlay = notes[6] * octive;
+			break;
+			default :
+				noteToPlay = 0;
+				break;
+		}
+		
+		osc.frequency.set(noteToPlay);
+		osc.amplitude.set(volume);
+
+		Synth.sleepForTicks(noteLength);
+		
+		osc.frequency.set(0);
+		osc.amplitude.set(volume);
+
+		Synth.sleepForTicks(50);
+	}
+
+}

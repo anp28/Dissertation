@@ -1,0 +1,231 @@
+package GUI;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
+import myFileReader.MyFileReader;
+import Images.MyJPanel;
+import aligner.Sequence;
+
+public class GUI extends JFrame implements ActionListener {
+
+	private int screenWidth, screenHeight;
+	private MyJPanel sequence1Panel = new MyJPanel();
+	private MyJPanel sequence2Panel = new MyJPanel();
+	JComboBox mediaType, mediaStyle, alignmentMethod;
+	JButton btnBrowseS2, btnBrowseS1;
+	public static JLabel lblSequence1 = new JLabel("Sequence 1 :");
+	public static JLabel lblSequence2 = new JLabel("Sequence 1 :");
+	MyFileReader fr = new MyFileReader();
+	JButton btnStart;
+	public GUIController gc = new GUIController();
+
+	public GUI() {
+
+		setTitle("DNA Comparison");
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		screenWidth = (int) screenSize.getWidth();
+		screenHeight = (int) screenSize.getHeight();
+
+		int alignLeft = (screenWidth / 12);
+		int alignCenter = (screenWidth / 2);
+		int alignRight = alignCenter + alignLeft;
+
+		setExtendedState(JFrame.MAXIMIZED_BOTH);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		getContentPane().setLayout(null);
+		getContentPane().setBackground(Color.DARK_GRAY);
+
+		// Lefthand of screen
+		sequence1Panel.setBounds(alignLeft, screenHeight / 10, screenWidth / 3,
+				screenWidth / 3);
+		getContentPane().add(sequence1Panel);
+
+		lblSequence1.setFont(new Font("Courier New", Font.BOLD, 15));
+		lblSequence1.setForeground(Color.WHITE);
+		lblSequence1.setBounds(alignLeft, (screenHeight * 5) / 100,
+				alignCenter, 14);
+		getContentPane().add(lblSequence1);
+
+		btnBrowseS1 = new JButton("Sequence 1");
+		btnBrowseS1.setBounds(alignLeft + (sequence1Panel.getWidth() / 2) - 55,
+				(screenHeight * 70) / 100, 110, 23);
+		btnBrowseS1.addActionListener(this);
+		getContentPane().add(btnBrowseS1);
+
+		// Righthand of scrren
+		sequence2Panel.setBounds(alignRight, screenHeight / 10,
+				screenWidth / 3, screenWidth / 3);
+		getContentPane().add(sequence2Panel);
+
+		lblSequence2.setFont(new Font("Courier New", Font.BOLD, 15));
+		lblSequence2.setForeground(Color.WHITE);
+		lblSequence2.setBounds(alignRight, (screenHeight * 5) / 100,
+				screenWidth, 14);
+		getContentPane().add(lblSequence2);
+
+		btnBrowseS2 = new JButton("Sequence 2");
+		btnBrowseS2.setBounds(
+				alignRight + (sequence2Panel.getWidth() / 2) - 55,
+				(screenHeight * 70) / 100, 110, 23);
+		btnBrowseS2.addActionListener(this);
+		getContentPane().add(btnBrowseS2);
+
+		// Decision
+		btnStart = new JButton("Align");
+		btnStart.setBounds(alignCenter - 45, (screenHeight * 70) / 100, 89, 23);
+		btnStart.addActionListener(this);
+		getContentPane().add(btnStart);
+
+		mediaType = new JComboBox(gc.getMediaTypes());
+		mediaType.setBounds(alignCenter - (btnStart.getWidth() / 2),
+				(screenHeight * 80) / 100, 89, 20);
+		mediaType.addActionListener(this);
+		getContentPane().add(mediaType);
+
+		mediaStyle = new JComboBox(gc.getAnimationList());
+		mediaStyle.setBounds(alignCenter - 75, (screenHeight * 85) / 100, 150,
+				20);
+		mediaStyle.addActionListener(gc);
+		getContentPane().add(mediaStyle);
+
+		alignmentMethod = new JComboBox(gc.getSequences().getMethods());
+		alignmentMethod.setBounds(alignCenter - 75, (screenHeight * 75) / 100,
+				150, 20);
+		getContentPane().add(alignmentMethod);
+
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		Object o = e.getSource();
+
+		if (o == btnBrowseS1) {
+			fr.openFile();
+			try{
+			lblSequence1.setText(gc.getSequences().setSequence1Title(fr.readTitle()));
+			}catch(Exception ex){
+				JOptionPane.showMessageDialog(null,
+						"Incorrect File Type");
+			}
+			gc.getSequences().setSequence1(fr.readFullFile());
+			btnStart.setText("Align");
+			alignmentMethod.setEnabled(true);	
+		}
+
+		else if (o == btnBrowseS2) {
+			fr.openFile();
+			try{
+			lblSequence2.setText(gc.getSequences().setSequence2Title(
+					fr.readTitle()));
+			}catch(Exception ex){
+				JOptionPane.showMessageDialog(null,
+						"Incorrect File Type");
+			}
+			gc.getSequences().setSequence2(fr.readFullFile());
+			btnStart.setText("Align");
+			alignmentMethod.setEnabled(true);	
+		}
+
+		else if (o == btnStart) {
+			if (e.getActionCommand() == "Start") {
+				switch (mediaType.getSelectedIndex()) {
+				case 0:
+					gc.genAnimation(sequence1Panel, sequence2Panel, mediaStyle
+							.getSelectedItem().toString());
+					break;
+				case 1:
+					break;
+				case 2:
+					gc.genMusic(mediaStyle.getSelectedItem().toString());
+					break;
+				}
+			} else {
+			
+				try {
+					this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+					
+					
+					final JDialog loading = new JDialog();
+				    JPanel p1 = new JPanel(new BorderLayout());
+				    p1.add(new JLabel("Aligning " + (gc.)), BorderLayout.CENTER);
+				    loading.setUndecorated(true);
+				    loading.getContentPane().add(p1);
+				    loading.pack();
+				    loading.setLocationRelativeTo(null);
+				    loading.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+				    loading.setModal(true);
+
+				    SwingWorker<String, Void> worker = new SwingWorker<String, Void>() {
+				        @Override
+				        protected String doInBackground() throws InterruptedException {
+
+							if (gc.align(alignmentMethod.getSelectedItem().toString())) {
+								btnStart.setText("Start");
+								alignmentMethod.setEnabled(false);
+							} 
+				        	return null;
+				        }
+				        @Override
+				        protected void done() {
+				            loading.dispose();
+				        }
+				    };
+				    worker.execute();
+				    loading.setVisible(true);
+					
+				
+
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					JOptionPane.showMessageDialog(null,
+							"Please select both sequences");
+
+				}
+				this.setCursor(Cursor.getDefaultCursor());
+			}
+		} else if (o == mediaType) {
+			mediaStyle.removeAllItems();
+			switch (mediaType.getSelectedIndex()) {
+			case 0: // animation
+				for (String s : gc.getAnimationList())
+					mediaStyle.addItem(s);
+				break;
+			case 1: // images
+
+				break;
+			case 2: // music
+				for (String s : gc.getMusicList())
+					mediaStyle.addItem(s);
+				break;
+
+			}
+		}
+	}
+
+}

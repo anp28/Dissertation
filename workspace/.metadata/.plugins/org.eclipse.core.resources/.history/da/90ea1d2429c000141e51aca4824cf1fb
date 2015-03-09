@@ -1,0 +1,31 @@
+
+public class MusicController {
+
+	public static void main(String[] args){
+		
+		String s = "TTGTGTGCGAATAACTATGAGGAAGACT";
+		int[] nl = {1,1,2,1,1,2,1,1,1,1,1,1,2,2,1,2,2,1,1,2,2,1,2,1,2,1,2,2};
+		String bs = "CTGT";
+		int[] bsnl = {2,4,2,4};
+		//MusicPlayer mp = new MusicPlayer(s, false);
+		
+		Thread t = new Thread(){
+			public void run(){
+				MusicPlayer mp = new MusicPlayer(s, false,nl,0.3,7);
+			}
+			
+		};
+		
+		Thread t2 = new Thread(){
+			public void run(){
+				MusicPlayer mp2 = new MusicPlayer(bs, true,bsnl, 0.2,5);
+			}
+			
+		};
+		
+	//	t.start();
+		t2.start();
+		
+	}
+	
+}

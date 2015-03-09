@@ -1,0 +1,52 @@
+package music;
+
+import java.util.ArrayList;
+
+public class MusicGen {
+
+	String[] musicList = {"Standard"};
+	char[] mainNotes;
+	char[] mainOctive;
+	
+	char[] backingNotes;
+	char[] backingNoteLength;
+	char[] backingOctive;
+	String sequence;
+	ArrayList<String> al = new ArrayList<String>();
+	
+	//160 seconds - 10 of which are backing = 2:30 of poorly structured music
+	
+	public void setSequence(String s){
+		sequence = s;
+	}
+	
+	public void setMusic(){
+		int length = sequence.length();
+		int charPerNote = length / 320;
+		splitString(charPerNote);
+		for(String s : al){
+			System.out.println("C's : " + countChars(s,'C'));
+			System.out.println("A's : " + countChars(s,'A'));
+			System.out.println("T's : " + countChars(s,'T'));
+			System.out.println("G's : " + countChars(s,'G'));
+			System.out.println();
+		}
+		
+	}
+	
+	public void splitString(int length){
+		for (int i = 0; i < sequence.length(); i += length) {
+	        al.add(sequence.substring(i, Math.min(sequence.length(), i + length)));
+	    }
+	}
+	
+	public int countChars(String s, char c){
+		String str = s;
+		return str.replaceAll("[^" + c + "]", "").length();
+	}
+
+	public String[] getMusicList() {
+	
+		return musicList;
+	}
+}

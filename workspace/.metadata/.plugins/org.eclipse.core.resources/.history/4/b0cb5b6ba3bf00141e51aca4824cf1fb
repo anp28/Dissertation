@@ -1,0 +1,105 @@
+
+
+import com.softsynth.jsyn.*;
+
+public class MusicPlayer {
+
+	String s = "TTGTGTGCGAATAACTATGAGGAAGA";
+	String bs = "TTGT";
+	double[] notes = {27.5, 30.868, 32.703,36.708,41.203, 43.654,48.999};
+	
+	int noteLength = 200;
+
+	SawtoothOscillatorBL osc;
+	LineOut lineOut;
+
+	public MusicPlayer() {
+
+		// Start JSyn synthesizer.
+		Synth.startEngine(0);
+		
+		// Create some unit generators.
+		osc = new SawtoothOscillatorBL();
+		lineOut = new LineOut();
+
+		// Connect oscillator to both left and right channels of output.
+		osc.output.connect(0, lineOut.input, 0);
+		osc.output.connect(0, lineOut.input, 1);
+
+		// Start the unit generators so they make sound.
+		try {
+			do {
+
+				osc.start();
+				lineOut.start();
+				for (int i = 0; i < s.length(); i++) {
+
+					char c = s.charAt(i);
+
+					switch(c){
+						case 'A' :
+							playNote('C',4);
+							break;
+						case 'G' :
+							playNote('D',4);
+							break;
+						case 'C' :
+							playNote('E',4);
+							break;
+						case 'T' :
+							playNote('F',4);
+							break;
+					}
+
+				}
+
+				 //Stop units and delete them to reclaim their resources.
+				osc.stop();
+				lineOut.stop();
+				 osc.delete();
+				 lineOut.delete();
+			} while (s != null);
+		} catch (Exception e) {
+			System.exit(0);
+		}
+
+		// Stop JSyn synthesizer.
+		Synth.stopEngine();
+
+	}
+
+	public void playNote(char note, int octive) {
+		double noteToPlay = 0;
+		switch(note){
+		case 'A':
+			noteToPlay = notes[0] * octive;
+			break;
+		case 'B':
+			noteToPlay = notes[1] * octive;
+			break;
+		case 'C':
+			noteToPlay = notes[2] * octive;
+			break;
+		case 'D':
+			noteToPlay = notes[3] * octive;
+			break;
+		case 'E':
+			noteToPlay = notes[4] * octive;
+			break;
+		case 'F':
+			noteToPlay = notes[5] * octive;
+			break;
+		case 'G':
+			noteToPlay = notes[6] * octive;
+			break;
+			
+		}
+		
+		osc.frequency.set(noteToPlay);
+		osc.amplitude.set(0.1);
+
+		Synth.sleepForTicks(noteLength);
+
+	}
+
+}

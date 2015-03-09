@@ -1,0 +1,11 @@
+package animation;
+
+public class circle {
+	
+	private int x , y;
+	private int radius;
+	private int thickness;
+	private short[] colour;
+	
+
+}

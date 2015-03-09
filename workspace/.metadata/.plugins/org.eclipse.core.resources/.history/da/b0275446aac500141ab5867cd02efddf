@@ -1,0 +1,69 @@
+package music;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+public class MusicGen {
+
+	String[] musicList = {"Standard"};
+	
+	int[] mainNotes;
+	int[] mainOctive;
+	
+	int[] backingNotes;
+	int[] backingNoteLength;
+	int[] backingOctive;
+	
+	String sequence;
+	ArrayList<String> al = new ArrayList<String>();
+	
+	//160 seconds - 10 of which are backing = 2:30 of poorly structured music
+	
+	public void setSequence(String s){
+		sequence = s;
+	}
+	
+	public void setMusic(){
+		//300 for main notes and 20 for backing each note lasts 500 milliseconds
+		
+		int charPerNote = sequence.length() / 320;
+		splitString(charPerNote);
+		
+		for(int i = 0; i < 10; i++){
+			String s = al.get(i);
+			int[] noOfChars = {countChars(s,'C'),countChars(s,'A'),countChars(s,'T'),countChars(s,'G'),countChars(s,'-')};
+			char c = Arrays.sort(noOfChars);
+			
+		}
+		
+	}
+	
+	public char getLargest(int[] ints){
+		
+		return 'c';
+	}
+	
+	public void setBacking(){
+		
+	}
+	
+	public void setMain(){
+		
+	}
+	
+	public void splitString(int length){
+		for (int i = 0; i < sequence.length(); i += length) {
+	        al.add(sequence.substring(i, Math.min(sequence.length(), i + length)));
+	    }
+	}
+	
+	public int countChars(String s, char c){
+		String str = s;
+		return str.replaceAll("[^" + c + "]", "").length();
+	}
+
+	public String[] getMusicList() {
+	
+		return musicList;
+	}
+}

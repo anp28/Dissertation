@@ -1,0 +1,258 @@
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.*;
+
+import javax.swing.*;
+
+public class TextureGen extends JFrame implements ActionListener {
+
+	private short[][] red, green, blue; // array of blue which is extracted from
+										// the image data
+	private int[] imageData; // data array of input image
+	private int rows, cols;
+	BufferedImage image = null;
+	String sequence = null;
+	Timer t = new Timer(10, this);
+	int i = 0;
+	short[] colour = { 0, 0, 0 };
+	int w = 0;
+	Boolean dir = true, end = false;
+	int scanner = 0;
+
+	public TextureGen() // throws Exception
+	{
+
+		setSize(600, 600);
+		setVisible(true);
+
+		image = ImageUtilities.getBufferedImage(600, 600, null);
+
+		loadRGBArrays();
+		makeBlank();
+
+		MyFileReader fr = new MyFileReader();
+		fr.openFile("C:\\Users\\Andy\\Desktop\\ImageProcessing\\ImageProccessing\\src\\comparrison.txt");
+		sequence = fr.readLine();
+
+		repaint();
+		t.start();
+		setVisible(true);
+
+	}
+
+	public void paint(Graphics g) {
+		g.drawImage(image, 50, 30, this); // original image
+		// g.drawImage(image, 70 + width, 30, this); // convolved image
+	}
+
+	/*
+	 * taken from an example by yyl
+	 */
+	public void loadRGBArrays() {
+		// check if we need to resize the component arrays, i.e.,
+		// has the size of the image changed?
+		if (image.getHeight() != rows || image.getWidth() != cols) {
+			rows = image.getHeight();
+			cols = image.getWidth();
+
+			red = new short[rows][cols];
+			green = new short[rows][cols];
+			blue = new short[rows][cols];
+		}
+
+		// get pixels as ints of the form 0xRRGGBB
+		imageData = image.getRGB(0, 0, image.getWidth(), image.getHeight(),
+				null, 0, image.getWidth());
+
+		// extract red, green, and blue components from each pixel
+		int index;
+		for (int row = 0; row < rows; row++) {
+			for (int col = 0; col < cols; col++) {
+				index = (row * cols) + col;
+				unpackPixel(imageData[index], red, green, blue, row, col);
+			}
+		}
+	}
+
+	public BufferedImage makeNewBufferedImage(short[][] ImageDataRed,
+			short[][] ImageDataGreen, short[][] ImageDataBlue) {
+		int[] newBufferedImageData = new int[rows * cols];
+		int index;
+		for (int row = 0; row < rows; row++) {
+			for (int col = 0; col < cols; col++) {
+				index = (row * cols) + col;
+				newBufferedImageData[index] = packPixel(ImageDataRed[row][col],
+						ImageDataGreen[row][col], ImageDataBlue[row][col]);
+			}
+		}
+
+		BufferedImage newImage = new BufferedImage(cols, rows,
+				BufferedImage.TYPE_INT_RGB);
+
+		for (int row = 0; row < rows; row++) {
+			for (int col = 0; col < cols; col++) {
+				index = (row * cols) + col;
+				newImage.setRGB(col, row, newBufferedImageData[index]);
+			}
+		}
+
+		return newImage;
+	}
+
+	private static int packPixel(int red, int green, int blue) {
+		return (red << 16) | (green << 8) | blue;
+	}
+
+	private static void unpackPixel(int pixel, short[][] red, short[][] green,
+			short[][] blue, int row, int col) {
+		red[row][col] = (short) ((pixel >> 16) & 0xFF);
+		green[row][col] = (short) ((pixel >> 8) & 0xFF);
+		blue[row][col] = (short) ((pixel >> 0) & 0xFF);
+	}
+
+	public void makeBlank() {
+		loadRGBArrays();
+		for (int row = 0; row < rows; row++) {
+			for (int col = 0; col < cols; col++) {
+
+				red[row][col] = 0;
+				green[row][col] = 0;
+				blue[row][col] = 0;
+
+			}
+
+		}
+
+		image = makeNewBufferedImage(red, green, blue);
+		repaint();
+	}
+
+	public void drawSnakeSquare() {
+
+	}
+
+	public void drawSquare(int x, int y, int r, short[] c) {
+		int l = r;
+		
+		while (l >= 0){
+			//Top row
+			//drawPixel(x - r, y - l,c);
+			drawPixel(x, y,c);
+			/*drawPixel(x - r, y + l,c);
+			 
+			//Top bottom
+			drawPixel(x + r, y - l,c);
+			drawPixel(x + r, y + l,c);
+			
+			drawPixel(x - l, y + r,c);
+			drawPixel(x + l, y + r,c);
+			
+			drawPixel(x - l, y - r,c);
+			drawPixel(x + l, y - r,c);*/
+			
+			l--;
+
+		}	
+		
+		
+		image = makeNewBufferedImage(red, green, blue);
+		repaint();
+	}
+
+	public void drawLine() {
+
+	}
+
+	public void drawCircle(int x0, int y0, int radius, short[] colour) {
+		int x = radius;
+		int y = 0;
+		int radiusError = 1 - x;
+
+		while (x >= y) {
+			drawPixel(x + x0, y + y0, colour);
+			drawPixel(y + x0, x + y0, colour);
+			drawPixel(-x + x0, y + y0, colour);
+			drawPixel(-y + x0, x + y0, colour);
+			drawPixel(-x + x0, -y + y0, colour);
+			drawPixel(-y + x0, -x + y0, colour);
+			drawPixel(x + x0, -y + y0, colour);
+			drawPixel(y + x0, -x + y0, colour);
+			y++;
+			if (radiusError < 0) {
+				radiusError += 2 * y + 1;
+			} else {
+				x--;
+				radiusError += 2 * (y - x) + 1;
+			}
+		}
+
+		image = makeNewBufferedImage(red, green, blue);
+		repaint();
+	}
+
+	public void drawPixel(int x, int y, short[] colour) {
+
+		red[x][y] = colour[0];
+		green[x][y] = colour[1];
+		blue[x][y] = colour[2];
+
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+
+		if (i == 765) {
+			dir = false;
+		} else if (i == 0) {
+			dir = true;
+		}
+
+		for (int y = 0; y < 3; y++) {
+
+			char c = sequence.charAt(scanner);
+
+			switch (c) {
+			case 'C':
+				colour[0] += 10;
+				break;
+			case 'G':
+				colour[1] += 10;
+				break;
+			case 'A':
+				colour[2] += 10;
+				break;
+			case 'T':
+				colour[0] -= 2;
+				colour[1] -= 2;
+				colour[2] -= 2;
+				break;
+			default :
+				colour[0] += 2;
+				colour[1] += 2;
+				colour[2] += 2;
+				break;
+			}
+			
+			scanner++;
+		}
+
+		if (end) {
+			w--;
+		} else {
+			w++;
+		}
+
+		if (w == (rows / 2) - 1) {
+			end = true;
+		} else if (w == 1) {
+			end = false;
+		}
+
+		//drawCircle(cols/2, rows/2, w, colour);
+		drawSquare(cols/2, rows/2, w, colour);
+		repaint();
+	}
+
+}

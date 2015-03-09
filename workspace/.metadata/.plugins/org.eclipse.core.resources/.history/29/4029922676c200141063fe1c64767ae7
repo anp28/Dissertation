@@ -1,0 +1,303 @@
+package Images;
+import java.awt.*;
+import java.awt.image.*;
+
+import javax.swing.*;
+
+public class ImageUtilities{
+	
+	protected short[][] red,green, blue;
+	private int[] imageData;
+	protected int rows, cols;
+	protected MyJPanel panel;
+	protected BufferedImage image = null;
+	short[]colour = {0,0,0};
+	protected String sequence;
+	protected int scanner;
+	
+	public void setPanel(MyJPanel p) {
+		panel = p;	
+		image = new BufferedImage(p.getWidth(),p.getHeight(), BufferedImage.TYPE_INT_RGB);
+		loadRGBArrays();
+		makeBlank();
+	}
+	
+	
+	public void setSequence(String s){
+		sequence = s;
+	}
+
+	public void paint(MyJPanel p) {
+		image = makeNewBufferedImage(red, green, blue);
+		panel.setImage((Image)image);
+		panel.repaint();
+	}
+
+	public void loadRGBArrays() {
+			rows = image.getHeight();
+			cols = image.getWidth();
+
+			red = new short[rows][cols];
+			green = new short[rows][cols];
+			blue = new short[rows][cols];
+		
+
+		// get pixels as ints of the form 0xRRGGBB
+		imageData = image.getRGB(0, 0, image.getWidth(),
+				image.getHeight(), null, 0, image.getWidth());
+
+		// extract red, green, and blue components from each pixel
+		int index;
+		for (int row = 0; row < rows; row++) {
+			for (int col = 0; col < cols; col++) {
+				index = (row * cols) + col;
+				unpackPixel(imageData[index], red, green, blue, row, col);
+			}
+		}
+	}
+
+	public BufferedImage makeNewBufferedImage(short[][] ImageDataRed,
+			short[][] ImageDataGreen, short[][] ImageDataBlue) {
+		int[] newBufferedImageData = new int[rows * cols];
+		int index;
+		for (int row = 0; row < rows; row++) {
+			for (int col = 0; col < cols; col++) {
+				index = (row * cols) + col;
+				newBufferedImageData[index] = packPixel(ImageDataRed[row][col],
+						ImageDataGreen[row][col], ImageDataBlue[row][col]);
+			}
+		}
+
+		BufferedImage newImage = new BufferedImage(cols, rows,
+				BufferedImage.TYPE_INT_RGB);
+
+		for (int row = 0; row < rows; row++) {
+			for (int col = 0; col < cols; col++) {
+				index = (row * cols) + col;
+				newImage.setRGB(col, row, newBufferedImageData[index]);
+			}
+		}
+
+		return newImage;
+	}
+
+	private static int packPixel(int red, int green, int blue) {
+		return (red << 16) | (green << 8) | blue;
+	}
+
+	private static void unpackPixel(int pixel, short[][] red, short[][] green,
+			short[][] blue, int row, int col) {
+		red[row][col] = (short) ((pixel >> 16) & 0xFF);
+		green[row][col] = (short) ((pixel >> 8) & 0xFF);
+		blue[row][col] = (short) ((pixel >> 0) & 0xFF);
+	}
+
+
+	public void makeBlank() {
+		//loadRGBArrays();
+		for (int row = 0; row < rows; row++) {
+			for (int col = 0; col < cols; col++) {
+				red[row][col] = 0;
+				green[row][col] = 0;
+				blue[row][col] = 0;
+			}
+
+		}
+
+		//image = makeNewBufferedImage(red, green, blue);
+	}
+	
+	public void drawCircle(int x0, int y0, int radius, short[] colour) {
+		int x = radius;
+		int y = 0;
+		int radiusError = 1 - x;
+
+		while (x >= y) {
+			drawPixel(x + x0, y + y0, colour);
+			drawPixel(y + x0, x + y0, colour);
+			drawPixel(-x + x0, y + y0, colour);
+			drawPixel(-y + x0, x + y0, colour);
+			drawPixel(-x + x0, -y + y0, colour);
+			drawPixel(-y + x0, -x + y0, colour);
+			drawPixel(x + x0, -y + y0, colour);
+			drawPixel(y + x0, -x + y0, colour);
+			y++;
+			if (radiusError < 0) {
+				radiusError += 2 * y + 1;
+			} else {
+				x--;
+				radiusError += 2 * (y - x) + 1;
+			}
+		}
+
+	//	image = makeNewBufferedImage(red, green, blue);
+	}
+	
+	public void drawSquare(int x, int y, int r, short[] c) {
+		int l = r;
+
+		while (l >= 0) {
+			// Top row
+			drawPixel(x - r, y - l, c);
+			drawPixel(x - r, y + l, c);
+			// Top bottom
+			drawPixel(x + r, y - l, c);
+			drawPixel(x + r, y + l, c);
+
+			drawPixel(x - l, y + r, c);
+			drawPixel(x + l, y + r, c);
+
+			drawPixel(x - l, y - r, c);
+			drawPixel(x + l, y - r, c);
+
+			l--;
+
+		}
+
+		//image = makeNewBufferedImage(red, green, blue);
+	}
+	
+	public void drawHex(int x, int y, int r, short[] c){
+		
+		drawLine(x-(r/2), y-r, x + (r/2),y-r, c); // p1 - p2
+		drawLine(x + (r/2),y-r, x + r, y, c); //p2 - p3
+		drawLine(x + r, y,x + (r/2), y + r, c);
+		drawLine(x + (r/2), y + r,x - (r/2), y + r, c);
+		drawLine(x - (r/2), y + r,x -r, y, c);
+		drawLine(x -r, y,x-(r/2), y-r, c);
+		
+	//	image = makeNewBufferedImage(red, green, blue);
+	}
+	
+	
+
+	public void drawFilledHex(int x, int y, int r, short[] c){
+		
+		for (int i = 0; i < 5; i++){
+			drawLine(x-(r/2), y-r, x + (r/2),y-r, c); // p1 - p2
+			drawLine(x + (r/2),y-r, x + r, y, c); //p2 - p3
+			drawLine(x + r, y,x + (r/2), y + r, c);
+			drawLine(x + (r/2), y + r,x - (r/2), y + r, c);
+			drawLine(x - (r/2), y + r,x -r, y, c);
+			drawLine(x -r, y,x-(r/2), y-r, c);
+		}
+	//	image = makeNewBufferedImage(red, green, blue);
+	}
+	
+	public int[] readNumFromSequence(int x) {
+		// int x, int y, int radius, int thickness, short[] colour
+		int[] spec = new int[x];
+		int temp = 0;
+		for (int i = 0; i < x; i++) {
+			char c = ' ';
+			try{
+			c = sequence.charAt(scanner);
+			} catch (NullPointerException e) {
+				JOptionPane.showMessageDialog(null, "End of the sequence");
+			}
+			switch (c) {
+			case 'C':
+				temp = 1;
+				break;
+			case 'T':
+				temp = 2;
+				break;
+			case 'A':
+				temp = 3;
+				break;
+			case 'G':
+				temp = 4;
+				break;
+			default:
+				temp = 0;
+			}
+			scanner++;
+			spec[i] = temp;
+		}
+
+		return spec;
+	}
+	
+	public void drawPixel (int x, int y, short[] colour){
+		
+		red[x][y] = colour[0];
+		green[x][y] = colour[1];
+		blue[x][y] = colour[2];
+
+		
+	}
+	
+	public void drawLine(int y0, int x0, int y1, int x1, short[] colour) {
+		/*
+		 * Bresenham straight line algorithm Java implementation used from
+		 * http://www.sanfoundry.com/java-program-bresenham-line-algorithm/
+		 * and many other places.
+		 */
+		int dx = Math.abs(x1 - x0);
+	    int dy = Math.abs(y1 - y0);
+
+	    int sx = x0 < x1 ? 1 : -1; 
+	    int sy = y0 < y1 ? 1 : -1; 
+
+	    int err = dx-dy;
+	    int e2;
+
+	    while (true) 
+	    {
+	        drawPixel(x0,y0,colour);
+
+	        if (x0 == x1 && y0 == y1) 
+	            break;
+
+	        e2 = 2 * err;
+	        if (e2 > -dy) 
+	        {
+	            err = err - dy;
+	            x0 = x0 + sx;
+	        }
+
+	        if (e2 < dx) 
+	        {
+	            err = err + dx;
+	            y0 = y0 + sy;
+	        }
+	    }                       
+	  //  image = makeNewBufferedImage(red, green, blue);	
+		}
+
+	
+	public short[] setColour(int r) {
+		short[] c = new short[3];
+		switch(r){
+		case 1:
+			c[0] = 255;
+			c[1] = 0;
+			c[2] = 0;
+			break;
+		case 2:
+			c[0] = 0;
+			c[1] = 255;
+			c[2] = 0;
+			break;
+		case 3:
+			c[0] = 0;
+			c[1] = 0;
+			c[2] = 255;
+			break;
+		case 4:
+			c[0] = 255;
+			c[1] = 255;
+			c[2] = 255;
+			break;
+		default :
+			c[0] = 0;
+			c[1] = 0;
+			c[2] = 0;
+		break;
+			
+		}
+		
+		return c;
+	}
+
+}
